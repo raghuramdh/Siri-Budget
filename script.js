@@ -171,6 +171,17 @@ class BudgetTracker {
             this.handleQuickIncomeSubmit();
         });
 
+        // Quick modal cancel buttons
+        const cancelQuickExpenseBtn = document.getElementById('cancelQuickExpense');
+        if (cancelQuickExpenseBtn) {
+            cancelQuickExpenseBtn.addEventListener('click', () => this.closeQuickExpenseModal());
+        }
+
+        const cancelQuickIncomeBtn = document.getElementById('cancelQuickIncome');
+        if (cancelQuickIncomeBtn) {
+            cancelQuickIncomeBtn.addEventListener('click', () => this.closeQuickIncomeModal());
+        }
+
         // Modal close buttons
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -882,7 +893,9 @@ class BudgetTracker {
 
     handleQuickExpenseSubmit() {
         const amount = parseFloat(document.getElementById('quickAmount').value);
-        const description = document.getElementById('quickDescription').value.trim() || 'Quick expense';
+        // HTML uses id="quickNotes" for the quick expense notes input
+        const descriptionEl = document.getElementById('quickNotes');
+        const description = descriptionEl ? descriptionEl.value.trim() || 'Quick expense' : 'Quick expense';
 
         if (!amount || amount <= 0) {
             alert('Please enter a valid amount.');
@@ -907,7 +920,9 @@ class BudgetTracker {
 
     handleQuickIncomeSubmit() {
         const amount = parseFloat(document.getElementById('quickIncomeAmount').value);
-        const description = document.getElementById('quickIncomeDescription').value.trim() || 'Quick income';
+        // HTML uses id="quickIncomeNotes" for the quick income notes input
+        const incomeDescEl = document.getElementById('quickIncomeNotes');
+        const description = incomeDescEl ? incomeDescEl.value.trim() || 'Quick income' : 'Quick income';
 
         if (!amount || amount <= 0) {
             alert('Please enter a valid amount.');
@@ -947,21 +962,22 @@ class BudgetTracker {
         const sortedNotes = [...this.quickNotes].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         
         notesList.innerHTML = sortedNotes.map(note => {
-            const noteClass = note.type === 'income' ? 'quick-income-note' : 'quick-expense-note';
-            const icon = note.type === 'income' ? '💰' : '💸';
-            
-            return '<div class="quick-note-item ' + noteClass + '">' +
-                '<div class="quick-note-content">' +
-                    '<div class="quick-note-header">' +
+            const isIncome = note.type === 'income';
+            const icon = isIncome ? '💰' : '💸';
+            const itemClass = isIncome ? 'income' : '';
+
+            return '<div class="quick-note-item ' + itemClass + '">' +
+                '<div class="quick-note-info">' +
+                    '<div class="quick-note-header" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
                         '<span class="quick-note-icon">' + icon + '</span>' +
-                        '<span class="quick-note-amount">' + this.formatCurrency(note.amount) + '</span>' +
-                        '<span class="quick-note-type">(' + note.type + ')</span>' +
+                        '<span class="amount ' + (isIncome ? 'income' : '') + '">' + this.formatCurrency(note.amount) + '</span>' +
+                        '<span class="quick-note-type" style="color:#6b7280;font-size:0.9rem;">(' + note.type + ')</span>' +
                     '</div>' +
-                    '<div class="quick-note-description">' + this.escapeHtml(note.description) + '</div>' +
-                    '<div class="quick-note-time">' + this.formatDate(note.createdAt.split('T')[0]) + '</div>' +
+                    '<div class="notes ' + (isIncome ? 'income' : '') + '">' + this.escapeHtml(note.description) + '</div>' +
+                    '<div class="date ' + (isIncome ? 'income' : '') + '">' + this.formatDate(note.createdAt.split('T')[0]) + '</div>' +
                 '</div>' +
                 '<div class="quick-note-actions">' +
-                    '<button class="btn-complete-note" onclick="budgetTracker.completeQuickNote(\'' + note.id + '\')" title="Convert to Transaction">' +
+                    '<button class="btn-complete" onclick="budgetTracker.completeQuickNote(\'' + note.id + '\')" title="Convert to Transaction">' +
                         '✓' +
                     '</button>' +
                     '<button class="btn-delete-note" onclick="budgetTracker.deleteQuickNote(\'' + note.id + '\', \'' + note.type + '\')" title="Delete Note">' +
