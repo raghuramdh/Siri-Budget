@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Budget Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Budget Tracker</h1>
+            <div class="quick-buttons">
+                <button id="quickIncomeBtn" class="quick-income-btn">⚡ Quick Income</button>
+                <button id="quickExpenseBtn" class="quick-expense-btn">⚡ Quick Expense</button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="home">🏠 Home</button>
+            <button class="tab-btn" data-tab="add-transaction">➕ Add Transaction</button>
+            <button class="tab-btn" data-tab="history">📊 Transaction History</button>
+            <button class="tab-btn" data-tab="farming">🌾 Farming</button>
+        </div>
+
+        <!-- Home Tab -->
+        <div id="home-tab" class="tab-content active">
+            <!-- Quick Notes -->
+            <div class="quick-expense-notes">
+                <h3>Quick Notes</h3>
+                <div id="quickExpenseNotesList">
+                    <!-- Quick notes will be shown here -->
+                </div>
+                <div class="no-quick-notes" id="noQuickNotes">
+                    <p>No quick notes captured. Use the "⚡ Quick Income" or "⚡ Quick Expense" buttons to add some!</p>
+                </div>
+            </div>
+
+            <!-- Month Selection -->
+            <div class="month-selector">
+                <label for="monthSelect">Select Month:</label>
+                <select id="monthSelect">
+                    <option value="2024-01">January 2024</option>
+                    <option value="2024-02">February 2024</option>
+                    <option value="2024-03">March 2024</option>
+                    <option value="2024-04">April 2024</option>
+                    <option value="2024-05">May 2024</option>
+                    <option value="2024-06">June 2024</option>
+                    <option value="2024-07">July 2024</option>
+                    <option value="2024-08">August 2024</option>
+                    <option value="2024-09">September 2024</option>
+                    <option value="2024-10">October 2024</option>
+                    <option value="2024-11">November 2024</option>
+                    <option value="2024-12">December 2024</option>
+                    <option value="2025-01">January 2025</option>
+                    <option value="2025-02">February 2025</option>
+                    <option value="2025-03">March 2025</option>
+                    <option value="2025-04">April 2025</option>
+                    <option value="2025-05">May 2025</option>
+                    <option value="2025-06">June 2025</option>
+                    <option value="2025-07">July 2025</option>
+                    <option value="2025-08">August 2025</option>
+                    <option value="2025-09">September 2025</option>
+                    <option value="2025-10">October 2025</option>
+                    <option value="2025-11">November 2025</option>
+                    <option value="2025-12">December 2025</option>
+                </select>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="card income-card">
+                    <h3>💵 Total Income</h3>
+                    <p id="totalIncome">₹0.00</p>
+                </div>
+                <div class="card expense-card">
+                    <h3>💸 Total Expenses</h3>
+                    <p id="totalExpenses">₹0.00</p>
+                </div>
+                <div class="card balance-card">
+                    <h3>💰 Net Balance</h3>
+                    <p id="netBalance">₹0.00</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Transaction Tab -->
+        <div id="add-transaction-tab" class="tab-content">
+            <div class="form-container">
+                <h2>Add New Transaction</h2>
+                <form id="transactionForm">
+                    <div class="form-group">
+                        <label for="type">Type:</label>
+                        <select id="type" required>
+                            <option value="">Select Type</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount (₹):</label>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category:</label>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <!-- Income categories -->
+                            <optgroup label="Income" id="incomeCategories" style="display: none;">
+                                <option value="dividend">Dividend</option>
+                                <option value="farming">Farming</option>
+                                <option value="gift">Gift</option>
+                                <option value="interest">Interest</option>
+                                <option value="loan-recovery">Loan Recovery</option>
+                                <option value="refund">Refund</option>
+                                <option value="salary">Salary</option>
+                                <option value="other">Other</option>
+                            </optgroup>
+                            <!-- Expense categories -->
+                            <optgroup label="Expenses" id="expenseCategories" style="display: none;">
+                                <option value="food">Food & Dining</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="housing">Housing/Rent</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="education">Education</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="other-expense">Other Expense</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subcategory">Subcategory:</label>
+                        <input type="text" id="subcategory" list="subcategoryOptions" placeholder="Enter or select subcategory (optional)">
+                        <datalist id="subcategoryOptions">
+                            <!-- Dynamic subcategory options will be populated here -->
+                        </datalist>
+                    </div>
+
+                    <!-- Farming-specific fields (hidden by default) -->
+                    <div id="farmingFields" class="farming-fields" style="display: none;">
+                        <h4>Farming Details</h4>
+                        
+                        <div class="form-group">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" placeholder="Enter quantity" step="0.01" min="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unit:</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="unit" value="kg" id="unitKg">
+                                    <span class="radio-label">Kg</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="unit" value="bunch" id="unitBunch">
+                                    <span class="radio-label">Bunch</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="unit" value="piece" id="unitPiece">
+                                    <span class="radio-label">Piece</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sale Type:</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="saleType" value="retail-farm" id="saleRetailFarm">
+                                    <span class="radio-label">Retail - Farm</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="saleType" value="retail-delivery" id="saleRetailDelivery">
+                                    <span class="radio-label">Retail - Delivery</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="saleType" value="wholesale-market" id="saleWholesaleMarket">
+                                    <span class="radio-label">Wholesale - Market</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="saleType" value="wholesale-vendor" id="saleWholesaleVendor">
+                                    <span class="radio-label">Wholesale - Vendor</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="farmingComments">Comments:</label>
+                            <textarea id="farmingComments" placeholder="Additional farming-related comments" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <input type="text" id="description" placeholder="e.g., Salary, Groceries, Rent (optional)">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Mode:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="cash" id="paymentCash" required>
+                                <span class="radio-label">💵 Cash</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="paymentMode" value="digital" id="paymentDigital" required>
+                                <span class="radio-label">💳 Digital</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date:</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Add Transaction</button>
+                    <button type="button" id="cancelEdit" class="btn-secondary" style="display: none;">Cancel Edit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Transaction History Tab -->
+        <div id="history-tab" class="tab-content">
+            <!-- Filters for History -->
+            <div class="filters-container">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="historyMonthSelect">Month:</label>
+                        <select id="historyMonthSelect">
+                            <option value="all">All Months</option>
+                            <option value="2024-01">January 2024</option>
+                            <option value="2024-02">February 2024</option>
+                            <option value="2024-03">March 2024</option>
+                            <option value="2024-04">April 2024</option>
+                            <option value="2024-05">May 2024</option>
+                            <option value="2024-06">June 2024</option>
+                            <option value="2024-07">July 2024</option>
+                            <option value="2024-08">August 2024</option>
+                            <option value="2024-09">September 2024</option>
+                            <option value="2024-10">October 2024</option>
+                            <option value="2024-11">November 2024</option>
+                            <option value="2024-12">December 2024</option>
+                            <option value="2025-01">January 2025</option>
+                            <option value="2025-02">February 2025</option>
+                            <option value="2025-03">March 2025</option>
+                            <option value="2025-04">April 2025</option>
+                            <option value="2025-05">May 2025</option>
+                            <option value="2025-06">June 2025</option>
+                            <option value="2025-07">July 2025</option>
+                            <option value="2025-08">August 2025</option>
+                            <option value="2025-09">September 2025</option>
+                            <option value="2025-10">October 2025</option>
+                            <option value="2025-11">November 2025</option>
+                            <option value="2025-12">December 2025</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="historyTypeSelect">Type:</label>
+                        <select id="historyTypeSelect">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="historyCategorySelect">Category:</label>
+                        <select id="historyCategorySelect">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="historySubcategorySelect">Subcategory:</label>
+                        <select id="historySubcategorySelect">
+                            <option value="all">All Subcategories</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <button id="clearFiltersBtn" class="btn-secondary">Clear Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Transactions</h2>
+                    <div class="table-actions">
+                        <button id="exportCsvBtn" class="btn-secondary">Export to CSV</button>
+                        <button id="clearAllBtn" class="btn-danger">Clear All Data</button>
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Subcategory</th>
+                                <th>Payment Mode</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <!-- Transactions will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noTransactions" class="no-data">
+                    <p>No transactions found for this period. Add your first transaction!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farming Tab -->
+        <div id="farming-tab" class="tab-content">
+            <h2>🌾 Farming Analytics</h2>
+            
+            <!-- Filters Section -->
+            <div class="filter-section">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="farmingCategoryFilter">Category:</label>
+                        <select id="farmingCategoryFilter" disabled>
+                            <option value="farming">Farming</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="farmingSubcategoryFilter">Subcategory:</label>
+                        <select id="farmingSubcategoryFilter">
+                            <option value="">All Subcategories</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="farmingMonthFilter">Month:</label>
+                        <select id="farmingMonthFilter">
+                            <option value="">All Months</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="farmingTypeFilter">Type:</label>
+                        <select id="farmingTypeFilter" disabled>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                    <button id="farmingClearFilters" class="btn-secondary">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Sub Tabs -->
+            <div class="farming-subtabs">
+                <button class="farming-subtab-btn active" data-subtab="summary">📊 Summary</button>
+                <button class="farming-subtab-btn" data-subtab="transactions">📋 Transactions</button>
+            </div>
+
+            <!-- Summary Sub Tab -->
+            <div id="farming-summary-subtab" class="farming-subtab-content active">
+                <div class="groupby-section">
+                    <h3>Group By:</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="groupByMonth" checked>
+                            <span class="checkmark"></span>
+                            Month
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="groupBySubcategory" checked>
+                            <span class="checkmark"></span>
+                            Subcategory
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="groupByUnit" checked>
+                            <span class="checkmark"></span>
+                            Unit
+                        </label>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="farmingSummaryTable" class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Subcategory</th>
+                                <th>Unit</th>
+                                <th>Total Quantity</th>
+                                <th>Total Amount (₹)</th>
+                                <th>Average Rate (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Summary data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noFarmingSummary" class="no-data">
+                    <p>No farming income data found. Add some farming transactions to see analytics!</p>
+                </div>
+            </div>
+
+            <!-- Transactions Sub Tab -->
+            <div id="farming-transactions-subtab" class="farming-subtab-content">
+                <div class="table-container">
+                    <table id="farmingTransactionsTable" class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Subcategory</th>
+                                <th>Quantity</th>
+                                <th>Unit</th>
+                                <th>Amount (₹)</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Transactions will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noFarmingTransactions" class="no-data">
+                    <p>No farming transactions found. Add some farming income transactions!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Expense Modal -->
+        <div id="quickExpenseModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚡ Quick Expense Note</h3>
+                    <span class="close-modal" id="closeQuickExpense">&times;</span>
+                </div>
+                <form id="quickExpenseForm">
+                    <div class="form-group">
+                        <label for="quickAmount">Amount (₹):</label>
+                        <input type="number" id="quickAmount" placeholder="0.00" step="0.01" min="0" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickNotes">Notes:</label>
+                        <input type="text" id="quickNotes" placeholder="e.g., Coffee, Lunch, Groceries">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">Save Quick Note</button>
+                        <button type="button" class="btn-secondary" id="cancelQuickExpense">Cancel</button>
+                    </div>
+                </form>
+                <p class="quick-note">💡 This creates a quick note. Complete the transaction details later to add it to your records.</p>
+            </div>
+        </div>
+
+        <!-- Quick Income Modal -->
+        <div id="quickIncomeModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚡ Quick Income Note</h3>
+                    <span class="close-modal" id="closeQuickIncome">&times;</span>
+                </div>
+                <form id="quickIncomeForm">
+                    <div class="form-group">
+                        <label for="quickIncomeAmount">Amount (₹):</label>
+                        <input type="number" id="quickIncomeAmount" placeholder="0.00" step="0.01" min="0" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickIncomeNotes">Notes:</label>
+                        <input type="text" id="quickIncomeNotes" placeholder="e.g., Salary, Freelance, Business">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">Save Quick Note</button>
+                        <button type="button" class="btn-secondary" id="cancelQuickIncome">Cancel</button>
+                    </div>
+                </form>
+                <p class="quick-note">💡 This creates a quick note. Complete the transaction details later to add it to your records.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
